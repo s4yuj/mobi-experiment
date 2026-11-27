@@ -16,11 +16,15 @@ python -m jupyterlab notebooks/availability.ipynb
 
 Select the project Python kernel and run all cells. The preparation script downloads the monthly Vancouver files to `data/raw/` and reuses its cache on later runs. It writes campus inventory changes, a citywide timestamp index for detecting archive gaps, and a source manifest with URLs and checksums to `data/processed/`. Once these files exist, the notebook runs offline.
 
-## First experiment
+## Reading the experiment
 
 The pilot uses 23 available monthly files from November 2024 through October 2026. June 2025 is missing. Each example represents a potential walk starting when a station's most recent report was at most ten minutes old and showed at least one e-bike. The outcome is reported availability at arrival. Quiet stations can carry forward their last known counts. Riders' unlock attempts are outside the archive.
 
-The notebook compares a count-only baseline, two logistic regressions and a shallow boosted tree. It selects a model on July–September 2026, then measures it on October at the same warning budget of 20 warnings per 100 eligible walks. Logistic regression using station, time and inventory earned the selection at both horizons. In October it identified 13.4 empty arrivals per 100 warnings at five minutes and 21.0 at ten minutes. The count-only baseline identified 10.0 and 16.5 respectively.
+The [executed notebook](notebooks/availability.ipynb) starts with a real Brock Commons inventory change and shows how it becomes a labeled walk. It compares raw counts and station identity with local time, five- and fifteen-minute inventory changes, report activity, and time spent at the current count. Each comparison uses forward validation on July, August and September 2026. Compact result tables follow each experiment.
+
+The notebook makes two selections. One asks which walks to flag across campus. The other asks when to warn a rider who repeatedly sees one bike at the same hub. Both use a budget of 20 warnings per 100 eligible walks. October was already examined during the original pilot, so its results are a retrospective benchmark.
+
+At Brock Commons, 120 of 521 one-bike walks in October had an empty ten-minute arrival. Per 100 warnings, the count-only rule identified 23.0 empty arrivals, logistic regression with local time identified 36.5, and a shallow tree using current counts, station and local time identified 38.5. The notebook shows the uncertainty on those gains and how results change across all 17 hubs.
 
 ## Data sources
 
