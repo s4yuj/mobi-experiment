@@ -28,6 +28,8 @@ At Brock Commons, 120 of 521 one-bike walks in October had an empty ten-minute a
 
 The [station and school-year experiment](notebooks/station_seasons.ipynb) ranks all 17 docks by observed e-bike movement, tests calendar features across eight months, and checks seasonal demand with one full year of rider departures. Run `python scripts/prepare_trip_counts.py` before rerunning this notebook. Only monthly station totals are cached. The [official Mobi trip files](https://www.mobibikes.ca/en/system-data) are the source for rider departures.
 
+The [backup-walk and Totem experiment](notebooks/backup_walks.ipynb) replays two dock pairs from eight fixed walking origins. It compares a count rule and a forecast rule with trying the nearer dock first, including a second attempt. Separate Totem experiments test school-day timing and observed e-bike decreases at nearby stations. The pedestrian route lengths are recorded in the notebook, so it runs offline with the inventory archives.
+
 ## Data sources
 
 Bike-share data by CityBikes contributors and available from https://data.citybik.es. The archive records changes in total bikes or free docks, so some exchanges between e-bikes and regular bikes are invisible. [Archive and ODbL terms](https://data.citybik.es/) · [CityBikes collector](https://github.com/citybikes/analytics/blob/master/collect.py) · [Mobi's UBC station list](https://www.mobibikes.ca/en/ubc)
