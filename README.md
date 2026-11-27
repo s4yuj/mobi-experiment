@@ -26,6 +26,8 @@ The notebook makes two selections. One asks which walks to flag across campus. T
 
 At Brock Commons, 120 of 521 one-bike walks in October had an empty ten-minute arrival. Per 100 warnings, the count-only rule identified 23.0 empty arrivals, logistic regression with local time identified 36.5, and a shallow tree using current counts, station and local time identified 38.5. The notebook shows the uncertainty on those gains and how results change across all 17 hubs.
 
+The [station and school-year experiment](notebooks/station_seasons.ipynb) ranks all 17 docks by observed e-bike movement, tests calendar features across eight months, and checks seasonal demand with one full year of rider departures. Run `python scripts/prepare_trip_counts.py` before rerunning this notebook. Only monthly station totals are cached. The [official Mobi trip files](https://www.mobibikes.ca/en/system-data) are the source for rider departures.
+
 ## Data sources
 
 Bike-share data by CityBikes contributors and available from https://data.citybik.es. The archive records changes in total bikes or free docks, so some exchanges between e-bikes and regular bikes are invisible. [Archive and ODbL terms](https://data.citybik.es/) · [CityBikes collector](https://github.com/citybikes/analytics/blob/master/collect.py) · [Mobi's UBC station list](https://www.mobibikes.ca/en/ubc)
