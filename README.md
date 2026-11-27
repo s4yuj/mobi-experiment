@@ -1,35 +1,40 @@
-# Mobi e-bike availability at UBC
+# Will there still be a Mobi e-bike when you get there?
 
-If a station shows an e-bike now, how likely is it to be empty after a five- or ten-minute walk? This offline pilot uses archived inventory from 17 UBC stations, including Brock Commons.
+A UBC rider sees one e-bike at a dock five minutes away. Would a forecast help them decide whether to walk there or try another dock?
 
-## Run the experiment
+**The pilot is complete. We’d leave ML out of the first version.** Keep the nearest dock with an e-bike first. When only one remains, mark it “One e-bike left · at risk” and show the closest backup.
 
-Use Python 3.12 and curl. From the project root, run
+## What we learned
+
+We replayed five- and ten-minute walks at 17 UBC stations, training on earlier months and testing on later ones. In the October ten-minute replay, when exactly one e-bike was showing, a model using station, bike counts and local time identified **22 empty arrivals per 100 warnings**, compared with **17** using the e-bike count alone. Both could warn on 20% of those walks at each station. E-bike departures rose during school months, but adding the school calendar barely changed warning precision. [Walk-time forecasts](notebooks/availability.ipynb) · [Station and school-year comparisons](notebooks/station_seasons.ipynb)
+
+We tested the walking advice from eight origins around two dock pairs (UBC Bookstore / War Memorial Gym and Totem Park / Orchard Commons). At an assumed 80 metres per minute, the forecast suggested walking straight to the farther dock **1,019 times**. In about **88%** of those cases, the nearer dock still showed an e-bike at arrival.
+
+Going straight to the backup yielded 9–10 more first-attempt pickups per 100 suggestions than trying the nearer dock. If the rider was willing to try both, starting at the nearer dock yielded about **two more eventual pickups per 100 suggestions** and saved **1.3–2.0 minutes of walking per suggestion**. [Backup-walk replay](notebooks/backup_walks.ipynb)
+
+## Limits of the archive
+
+We used 23 months of inventory from November 2024 through October 2026, with June 2025 missing. The archive records changes in total bikes or free docks, so an e-bike and a regular bike can trade places without triggering a report. In the initial replay, only 16% of five-minute walks had a newer station report by arrival. The remaining walks carried the last count forward.
+
+Every pickup above is inferred from inventory. The archive has no record of whether a rider could unlock the bike. A field trial would tell us whether a forecast warning helps riders more than “one bike left.”
+
+## Next product step
+
+Build a mobile page that uses the rider’s location to list stations with their preferred bike type in walking-distance order. Show the current count and walking time beside each option. Someone walking to the last e-bike should already know where to go if it’s gone.
+
+## Reproduce the experiments
+
+The linked notebooks include their outputs. To rerun them locally, use Python 3.12 and curl from the repository root.
 
 ```sh
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 python scripts/prepare_data.py
-python -m jupyterlab notebooks/availability.ipynb
+python scripts/prepare_trip_counts.py  # only needed for the school-year comparison
+python -m jupyterlab notebooks/
 ```
 
-Select the project Python kernel and run all cells. The preparation script downloads the monthly Vancouver files to `data/raw/` and reuses its cache on later runs. It writes campus inventory changes, a citywide timestamp index for detecting archive gaps, and a source manifest with URLs and checksums to `data/processed/`. Once these files exist, the notebook runs offline.
+Select the environment’s Python kernel and run a notebook from top to bottom. The preparation scripts cache the data under `data/`. Once prepared, the notebooks run offline.
 
-## Reading the experiment
-
-The pilot uses 23 available monthly files from November 2024 through October 2026. June 2025 is missing. Each example represents a potential walk starting when a station's most recent report was at most ten minutes old and showed at least one e-bike. The outcome is reported availability at arrival. Quiet stations can carry forward their last known counts. Riders' unlock attempts are outside the archive.
-
-The [executed notebook](notebooks/availability.ipynb) starts with a real Brock Commons inventory change and shows how it becomes a labeled walk. It compares raw counts and station identity with local time, five- and fifteen-minute inventory changes, report activity, and time spent at the current count. Each comparison uses forward validation on July, August and September 2026. Compact result tables follow each experiment.
-
-The notebook makes two selections. One asks which walks to flag across campus. The other asks when to warn a rider who repeatedly sees one bike at the same hub. Both use a budget of 20 warnings per 100 eligible walks. October was already examined during the original pilot, so its results are a retrospective benchmark.
-
-At Brock Commons, 120 of 521 one-bike walks in October had an empty ten-minute arrival. Per 100 warnings, the count-only rule identified 23.0 empty arrivals, logistic regression with local time identified 36.5, and a shallow tree using current counts, station and local time identified 38.5. The notebook shows the uncertainty on those gains and how results change across all 17 hubs.
-
-The [station and school-year experiment](notebooks/station_seasons.ipynb) ranks all 17 docks by observed e-bike movement, tests calendar features across eight months, and checks seasonal demand with one full year of rider departures. Run `python scripts/prepare_trip_counts.py` before rerunning this notebook. Only monthly station totals are cached. The [official Mobi trip files](https://www.mobibikes.ca/en/system-data) are the source for rider departures.
-
-The [backup-walk and Totem experiment](notebooks/backup_walks.ipynb) replays two dock pairs from eight fixed walking origins. It compares a count rule and a forecast rule with trying the nearer dock first, including a second attempt. Separate Totem experiments test school-day timing and observed e-bike decreases at nearby stations. The pedestrian route lengths are recorded in the notebook, so it runs offline with the inventory archives.
-
-## Data sources
-
-Bike-share data by CityBikes contributors and available from https://data.citybik.es. The archive records changes in total bikes or free docks, so some exchanges between e-bikes and regular bikes are invisible. [Archive and ODbL terms](https://data.citybik.es/) · [CityBikes collector](https://github.com/citybikes/analytics/blob/master/collect.py) · [Mobi's UBC station list](https://www.mobibikes.ca/en/ubc)
+Bike-share data by CityBikes contributors and available from https://data.citybik.es. [Archive and ODbL terms](https://data.citybik.es/) · [Collector](https://github.com/citybikes/analytics/blob/master/collect.py) · [Mobi rider trip data](https://www.mobibikes.ca/en/system-data) · [UBC station list](https://www.mobibikes.ca/en/ubc)
